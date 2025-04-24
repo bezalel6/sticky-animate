@@ -1,19 +1,15 @@
 .header {
   position: sticky;
-
   top: 0;
   background-color: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   width: 100%;
 }
-.row-dir{
-  flex-direction: row;
-}
+
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
-  /* padding: 1rem 2rem; */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -29,10 +25,19 @@
 .header nav ul {
   display: flex;
   list-style: none;
-  flex-direction: column;
   margin: 0;
   padding: 0;
   gap: 2rem;
+}
+
+.header nav ul[style*="flex-direction: row"] {
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.header nav ul[style*="flex-direction: column"] {
+  flex-direction: column;
 }
 
 .header nav a {
@@ -44,10 +49,8 @@
 
 .header nav a:hover {
   color: #007bff;
-} 
-.container{
-  position:relative;
-  /* left:50%; */
-  /* transform: translate(-50%, 0); */
+}
 
+.container {
+  position: relative;
 }

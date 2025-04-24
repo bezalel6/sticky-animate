@@ -1,11 +1,10 @@
 import { useScroll } from "framer-motion";
-import React, { Ref, RefObject, useEffect, useRef, useState } from "react";
+import React, { Ref, useEffect, useRef, useState } from "react";
 import {
+  normalizeTarget as $,
   FakeDomTarget,
   makeFakeDom,
-  normalizeTarget as $,
 } from "../make-fake-dom";
-import { mergeProps } from "../utils/mergeProps";
 import "./Header.css";
 const SCROLLBAR_OFFSET = 10; // Pixels from top to consider section "passed"
 const ITEMS = [
@@ -14,7 +13,16 @@ const ITEMS = [
   { id: "services", label: "Our Services" },
   { id: "contact", label: "Contact Us" },
 ];
-const startingDir = "column";
+class Direction {
+  constructor(protected dir: "column" | "row") {}
+  get() {
+    return this.dir;
+  }
+  not() {
+    return this.dir === "column" ? "row" : "column";
+  }
+}
+const startingDir = new Direction("column");
 function detailedDiff(id: string, targetPosition: DOMRect) {
   const actualElement = document.querySelector(`#${id}`);
   const actualPosition = actualElement?.getBoundingClientRect();
@@ -42,7 +50,7 @@ function animateElement(container: FakeDomTarget, targetId: string) {
   if (targetPositions === null) {
     targetPositions = makeFakeDom(
       container,
-      { flexDirection: startingDir === "row" ? "column" : "row" },
+      { flexDirection: startingDir.not() },
       (target) => {
         const positions: { [id: string]: DOMRect } = {};
         Array.from(target.querySelectorAll(".item")).forEach((t) => {
@@ -157,18 +165,19 @@ const Header: React.FC = () => {
           ref: containerRef as Ref<HTMLDivElement> | undefined,
         }}
         navList={{
-          style: { flexDirection: startingDir === "row" ? "row" : "column" },
+          style: { flexDirection: startingDir.get() },
         }}
       ></Skeleton>
       <Skeleton
-        header={{
+        header={{ style: { zIndex: -1 } }}
+        headerContent={{
           style: {
             display: "block",
             zIndex: -1,
           },
         }}
         navList={{
-          style: { flexDirection: startingDir === "row" ? "row" : "column" },
+          style: { flexDirection: startingDir.get() },
         }}
       ></Skeleton>
     </div>
