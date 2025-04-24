@@ -86,7 +86,11 @@ function animateElement(container: FakeDomTarget, targetId: string) {
     const rekt = getRect(element);
     // placeElement(element, rekt);
     // element.style.left = `${rekt.}`;
-    element.style.top = `${rekt.top}px`;
+    const ul = element.parentElement as HTMLUListElement;
+    ul.style.paddingTop = `${rekt.top}px`;
+    element.style.top = `0px`;
+    element.style.left = `0px`;
+    // element.style.top = `${rekt.top}px`;
     element.style.position = "absolute";
     // Store original height
     // element.parentElement!.style.height = element.offsetHeight + "";

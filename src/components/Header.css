@@ -56,9 +56,10 @@
   position: relative;
 }
 ul{
+  border:2px cyan solid;
   display: flex;
   position: relative !important;
 }
 ul,nav{
-  transition: all 0.5 ease-in-out;
+  transition: all 0.5s ease-in-out;
 }
