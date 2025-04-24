@@ -31,15 +31,14 @@ export function makeFakeDom<T>(
 
   // Create a hidden container
   const container = document.createElement("div");
-  Object.assign(container.style, {
+  Object.assign(clone.style, {
     // position: "fixed",
     // left: "-9999px",
     // visibility: "hidden",
   });
 
   // Append elements to DOM
-  target.parentElement?.append(target, container);
-  container.appendChild(clone);
+  target.parentNode!.insertBefore(clone, target);
 
   // Apply temporary styles
   Object.assign(clone.style, styles);

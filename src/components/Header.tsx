@@ -5,9 +5,10 @@ import {
   makeFakeDom,
   normalizeTarget as $,
 } from "../make-fake-dom";
+import { mergeProps } from "../utils/mergeProps";
 import "./Header.css";
 const SCROLLBAR_OFFSET = 10; // Pixels from top to consider section "passed"
-const sections = [
+const ITEMS = [
   { id: "home", label: "Home" },
   { id: "about", label: "About Us" },
   { id: "services", label: "Our Services" },
@@ -56,12 +57,8 @@ function animateElement(container: FakeDomTarget, targetId: string) {
   if (targetPosition && element && !element.getAttribute("messed")) {
     element.setAttribute("messed", "true");
 
-    // Get the current position of the element
-    const currentRect = element.getBoundingClientRect();
-
     // Set initial position
     element.style.position = "absolute";
-    // element.style.transform = `translate(${currentRect?.x}px, ${currentRect?.y}px)`;
 
     const diff = detailedDiff(targetId, targetPosition);
     element.style.transition = "all 1.3s ease-in-out";
@@ -88,7 +85,7 @@ const Header: React.FC = () => {
       if (!containerRef.current) return;
 
       const positions: { [key: string]: number } = {};
-      sections.forEach((section) => {
+      ITEMS.forEach((section) => {
         const element = containerRef.current?.querySelector(`#${section.id}`);
         if (element) {
           positions[section.id] = Number(
@@ -141,29 +138,61 @@ const Header: React.FC = () => {
   }, [scrollY, sectionPositions]);
   return (
     <>
+      <Skeleton></Skeleton>
       <Skeleton
-        ref={containerRef}
-        style={{ backgroundColor: "aqua", height: 0 }}
+        header={{ style: { display: "block", visibility: "hidden" } }}
       ></Skeleton>
-      <Skeleton style={{ display: "block", visibility: "hidden" }}></Skeleton>
     </>
   );
 };
+type SkeletonStructure = {
+  header: HTMLDivElement;
+  headerContent: HTMLDivElement;
+  nav: HTMLElement;
+  navList: HTMLUListElement;
+  items: {
+    [id: string]: HTMLLIElement;
+  };
+};
+
+// Utility type that maps a key to its props type
+type ElementProps<T extends keyof SkeletonStructure> = React.HTMLProps<
+  SkeletonStructure[T]
+>;
+
+type SkeletonProps = {
+  [P in keyof SkeletonStructure]: ElementProps<P>;
+};
+
+// Generic component must take `props` of type SkeletonProps<K>
 const Skeleton = ({
-  ref,
-  ...attrs
-}: {
-  ref?: RefObject<HTMLUListElement | null>;
-} & React.HTMLProps<HTMLElement>) => {
+  header,
+  headerContent,
+  nav,
+  navList,
+  items,
+}: Partial<SkeletonProps>) => {
+  const mergedHeader = mergeProps({ className: "header" }, header || {});
+  const mergedHeaderContent = mergeProps(
+    { className: "header-content" },
+    headerContent || {}
+  );
+  const mergedNav = mergeProps(nav || {});
+  const mergedNavList = mergeProps(
+    { style: { position: "relative" } },
+    navList || {}
+  );
+  const mergedItems = mergeProps({ className: "item" }, items || {});
+
   return (
-    <header className="header">
-      <div className="header-content" {...attrs}>
+    <header {...mergedHeader}>
+      <div {...mergedHeaderContent}>
         <h1>Sticky Header</h1>
-        <nav>
-          <ul style={{ position: "relative" }} ref={ref}>
-            {sections.map((section) => (
-              <li id={section.id} className="section" key={section.id}>
-                <a href={`#${section.id}`}>{section.label}</a>
+        <nav {...mergedNav}>
+          <ul {...(mergedNavList as React.HTMLAttributes<HTMLUListElement>)}>
+            {ITEMS.map((item) => (
+              <li {...mergedItems} id={item.id} key={item.id}>
+                <a href={`#${item.id}`}>{item.label}</a>
               </li>
             ))}
           </ul>
@@ -172,4 +201,5 @@ const Skeleton = ({
     </header>
   );
 };
+
 export default Header;
