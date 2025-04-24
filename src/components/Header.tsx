@@ -90,22 +90,23 @@ function animateElement(container: FakeDomTarget, targetId: string) {
     const ul = element.parentElement as HTMLUListElement;
 
     // Store original height
-    ul.style.paddingTop = `${rekt.top}px`;
+    const originalHeight = ul.offsetHeight;
+    ul.style.height = `${originalHeight}px`;
+    ul.style.paddingTop = `0px`;
+
     Object.assign(element.style, {
-      ...element.style,
+      // position: "absolute",
+      flex: "0 0 100%",
       top: "0px",
       left: "0px",
       width: rekt.width + "px",
       height: rekt.height + "px",
-      position: "absolute",
+      transform: `translate(${diff?.left}px, ${diff?.top}px)`,
     });
-    requestAnimationFrame(() => {
-      element.style.transform = `translate(${diff?.left}px, ${diff?.top}px)`;
 
+    requestAnimationFrame(() => {
       // Reset height after transition completes
-      setTimeout(() => {
-        element.parentElement!.style.height = "";
-      }, 1300); // 1.3s to match the transition duration
+      ul.style.height = `${originalHeight}px`;
     });
   } else {
     console.warn(
