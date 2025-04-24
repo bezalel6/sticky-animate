@@ -140,18 +140,24 @@ const Header: React.FC = () => {
     return () => unsubscribe();
   }, [scrollY, sectionPositions]);
   return (
-    <Skeleton ref={containerRef} style={{ backgroundColor: "aqua" }}></Skeleton>
+    <>
+      <Skeleton
+        ref={containerRef}
+        style={{ backgroundColor: "aqua", height: 0 }}
+      ></Skeleton>
+      <Skeleton style={{ display: "block", visibility: "hidden" }}></Skeleton>
+    </>
   );
 };
 const Skeleton = ({
   ref,
   ...attrs
 }: {
-  ref: RefObject<HTMLUListElement | null>;
+  ref?: RefObject<HTMLUListElement | null>;
 } & React.HTMLProps<HTMLElement>) => {
   return (
-    <header className="header" {...attrs}>
-      <div className="header-content">
+    <header className="header">
+      <div className="header-content" {...attrs}>
         <h1>Sticky Header</h1>
         <nav>
           <ul style={{ position: "relative" }} ref={ref}>
