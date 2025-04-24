@@ -5,8 +5,6 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   width: 100%;
-  transition: all 1s ease-in-out;
-min-height: 300px;
 }
 .row-dir{
   flex-direction: row;
@@ -19,7 +17,6 @@ min-height: 300px;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  transition: all 1s ease-in-out;
 }
 
 .header h1 {
@@ -27,8 +24,7 @@ min-height: 300px;
   font-size: 1.5rem;
   color: #333;
 }
-ul{
-}
+
 .header nav ul {
   display: flex;
   list-style: none;
