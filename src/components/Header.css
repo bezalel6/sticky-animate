@@ -6,7 +6,9 @@
   z-index: 1000;
   width: 100%;
 }
-
+.row-dir{
+  flex-direction: row;
+}
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
