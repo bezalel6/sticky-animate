@@ -6,6 +6,7 @@ import {
   makeFakeDom,
 } from "../make-fake-dom";
 import "./Header.css";
+type DOMRect = ReturnType<typeof getRect>;
 const SCROLLBAR_OFFSET = 10; // Pixels from top to consider section "passed"
 const ITEMS = [
   { id: "home", label: "Home" },
@@ -23,10 +24,16 @@ class Direction {
   }
 }
 const startingDir = new Direction("column");
-function detailedDiff(id: string, targetPosition: DOMRect) {
-  const actualElement = document.querySelector(`#${id}`);
-  const actualPosition = actualElement?.getBoundingClientRect();
-
+function getRect(e: Element) {
+  const rect = e.getBoundingClientRect();
+  const { bottom, height, left, right, top, x, y, width } = rect;
+  return { bottom, height, left, right, top, x, y, width };
+}
+function detailedDiff(
+  id: string,
+  actualPosition: DOMRect,
+  targetPosition: DOMRect
+) {
   // Calculate the difference between fake and actual positions
   const diff =
     actualPosition && targetPosition
@@ -54,7 +61,7 @@ function animateElement(container: FakeDomTarget, targetId: string) {
       (target) => {
         const positions: { [id: string]: DOMRect } = {};
         Array.from(target.querySelectorAll(".item")).forEach((t) => {
-          positions[t.id] = t.getBoundingClientRect();
+          positions[t.id] = getRect(t);
         });
         return positions;
       }
