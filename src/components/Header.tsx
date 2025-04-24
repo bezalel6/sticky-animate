@@ -14,7 +14,7 @@ const ITEMS = [
   { id: "services", label: "Our Services" },
   { id: "contact", label: "Contact Us" },
 ];
-const startingDir = "row";
+const startingDir = "column";
 function detailedDiff(id: string, targetPosition: DOMRect) {
   const actualElement = document.querySelector(`#${id}`);
   const actualPosition = actualElement?.getBoundingClientRect();
@@ -149,6 +149,8 @@ const Header: React.FC = () => {
             bottom: "0",
             left: "0",
             margin: "auto",
+            height: 0,
+            overflow: "visible",
           },
         }}
         header={{
