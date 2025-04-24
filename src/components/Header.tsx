@@ -14,6 +14,7 @@ const ITEMS = [
   { id: "services", label: "Our Services" },
   { id: "contact", label: "Contact Us" },
 ];
+const startingDir = "row";
 function detailedDiff(id: string, targetPosition: DOMRect) {
   const actualElement = document.querySelector(`#${id}`);
   const actualPosition = actualElement?.getBoundingClientRect();
@@ -41,10 +42,10 @@ function animateElement(container: FakeDomTarget, targetId: string) {
   if (targetPositions === null) {
     targetPositions = makeFakeDom(
       container,
-      { flexDirection: "row" },
+      { flexDirection: startingDir === "row" ? "column" : "row" },
       (target) => {
         const positions: { [id: string]: DOMRect } = {};
-        Array.from(target.querySelectorAll(".section")).forEach((t) => {
+        Array.from(target.querySelectorAll(".item")).forEach((t) => {
           positions[t.id] = t.getBoundingClientRect();
         });
         return positions;
@@ -52,6 +53,7 @@ function animateElement(container: FakeDomTarget, targetId: string) {
     );
     if (!targetPositions) throw new Error();
   }
+  console.log({ targetPositions });
   const targetPosition = targetPositions[targetId];
   const element = $(targetId, "#");
   if (targetPosition && element && !element.getAttribute("messed")) {
@@ -137,17 +139,27 @@ const Header: React.FC = () => {
     return () => unsubscribe();
   }, [scrollY, sectionPositions]);
   return (
-    <>
+    <div className="container">
       <Skeleton
-        headerContent={{ style: { position: "absolute", top: 0, left: 0 } }}
+        headerContent={{
+          style: {
+            position: "absolute",
+            top: 0,
+            left: "50%",
+            transform: "translate(-50%,0)",
+          },
+        }}
         header={{
           ref: containerRef as Ref<HTMLDivElement> | undefined,
+        }}
+        navList={{
+          style: { flexDirection: startingDir === "row" ? "row" : "column" },
         }}
       ></Skeleton>
       <Skeleton
         header={{ style: { display: "block", visibility: "hidden" } }}
       ></Skeleton>
-    </>
+    </div>
   );
 };
 type SkeletonStructure = {
@@ -182,7 +194,7 @@ const Skeleton = ({
       <div className="header-content" {...headerContent}>
         <h1>Sticky Header</h1>
         <nav {...nav}>
-          <ul style={{ position: "relative" }} {...navList}>
+          <ul {...navList}>
             {ITEMS.map((item) => (
               <li className="item" {...items} id={item.id} key={item.id}>
                 <a href={`#${item.id}`}>{item.label}</a>

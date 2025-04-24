@@ -45,3 +45,9 @@
 .header nav a:hover {
   color: #007bff;
 } 
+.container{
+  position:relative;
+  /* left:50%; */
+  /* transform: translate(-50%, 0); */
+
+}

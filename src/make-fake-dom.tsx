@@ -4,7 +4,8 @@ export type FakeDomTarget =
   | Selector
   | Element
   | RefObject<Element | null>
-  | null;
+  | null
+  | undefined;
 export function normalizeTarget(target: FakeDomTarget, prefix: string = "") {
   // Get the target element
   let targetElement: Element | null = null;
