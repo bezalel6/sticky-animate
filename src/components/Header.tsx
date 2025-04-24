@@ -29,6 +29,11 @@ function getRect(e: Element) {
   const { bottom, height, left, right, top, x, y, width } = rect;
   return { bottom, height, left, right, top, x, y, width };
 }
+function placeElement(e: HTMLElement, rect: DOMRect) {
+  e.style.top = rect.y + "";
+  e.style.left = rect.x + "";
+  console.log("Placing:", rect);
+}
 function detailedDiff(
   id: string,
   actualPosition: DOMRect,
@@ -75,14 +80,26 @@ function animateElement(container: FakeDomTarget, targetId: string) {
     element.setAttribute("messed", "true");
 
     // Set initial position
-    element.style.position = "absolute";
 
-    const diff = detailedDiff(targetId, targetPosition);
-    element.style.transition = "all 1.3s ease-in-out";
+    const diff = detailedDiff(targetId, getRect(element), targetPosition);
+    //  = "all 1.3s ease-in-out";
+    const rekt = getRect(element);
+    // placeElement(element, rekt);
+    // element.style.left = `${rekt.}`;
+    element.style.top = `${rekt.top}px`;
+    element.style.position = "absolute";
+    // Store original height
+    // element.parentElement!.style.height = element.offsetHeight + "";
     // Apply the animation
-    requestAnimationFrame(() => {
-      element.style.transform = `translate(${diff?.left}px, ${diff?.top}px)`;
-    });
+    // requestAnimationFrame(() => {
+    //   element.style.position = "absolute";
+    //   element.style.transform = `translate(${diff?.left}px, ${diff?.top}px)`;
+
+    //   // Reset height after transition completes
+    //   setTimeout(() => {
+    //     element.parentElement!.style.height = "";
+    //   }, 1300); // 1.3s to match the transition duration
+    // });
   } else {
     console.warn(
       `Could not animate ${targetId}: element or position not found`
@@ -172,7 +189,11 @@ const Header: React.FC = () => {
           ref: containerRef as Ref<HTMLDivElement> | undefined,
         }}
         navList={{
-          style: { flexDirection: startingDir.get() },
+          style: {
+            display: "flex",
+            position: "relative",
+            flexDirection: startingDir.get(),
+          },
         }}
       ></Skeleton>
       <Skeleton
@@ -181,11 +202,16 @@ const Header: React.FC = () => {
           style: {
             display: "block",
             zIndex: -1,
+            visibility: "hidden",
+            position: "relative",
+            height: "100%",
+            minHeight: "100px",
           },
         }}
         navList={{
           style: { flexDirection: startingDir.get() },
         }}
+        items={{ style: { marginTop: 10 } }}
       ></Skeleton>
     </div>
   );
