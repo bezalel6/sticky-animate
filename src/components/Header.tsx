@@ -6,14 +6,16 @@ import {
   makeFakeDom,
 } from "../make-fake-dom";
 import "./Header.css";
+
 type DOMRect = ReturnType<typeof getRect>;
-const SCROLLBAR_OFFSET = 10; // Pixels from top to consider section "passed"
+const SCROLLBAR_OFFSET = 10;
 const ITEMS = [
   { id: "home", label: "Home" },
   { id: "about", label: "About Us" },
   { id: "services", label: "Our Services" },
   { id: "contact", label: "Contact Us" },
 ];
+
 class Direction {
   constructor(protected dir: "column" | "row") {}
   get() {
@@ -23,23 +25,20 @@ class Direction {
     return this.dir === "column" ? "row" : "column";
   }
 }
+
 const startingDir = new Direction("column");
+
 function getRect(e: Element) {
   const rect = e.getBoundingClientRect();
   const { bottom, height, left, right, top, x, y, width } = rect;
   return { bottom, height, left, right, top, x, y, width };
 }
-function placeElement(e: HTMLElement, rect: DOMRect) {
-  e.style.top = rect.y + "";
-  e.style.left = rect.x + "";
-  console.log("Placing:", rect);
-}
+
 function detailedDiff(
   id: string,
   actualPosition: DOMRect,
   targetPosition: DOMRect
 ) {
-  // Calculate the difference between fake and actual positions
   const diff =
     actualPosition && targetPosition
       ? {
@@ -57,7 +56,9 @@ function detailedDiff(
   });
   return diff;
 }
+
 let targetPositions: { [id: string]: DOMRect } | null = null;
+
 function animateElement(container: FakeDomTarget, targetId: string) {
   if (targetPositions === null) {
     targetPositions = makeFakeDom(
@@ -73,45 +74,42 @@ function animateElement(container: FakeDomTarget, targetId: string) {
     );
     if (!targetPositions) throw new Error();
   }
-  console.log({ targetPositions });
+
   const targetPosition = targetPositions[targetId];
   const element = $(targetId, "#");
-  if (targetPosition && element && !element.getAttribute("messed")) {
-    element.setAttribute("messed", "true");
 
-    // Set initial position
+  if (targetPosition && element && !element.classList.contains("animating")) {
+    element.classList.add("animating");
 
     const diff = detailedDiff(targetId, getRect(element), targetPosition);
-    //  = "all 1.3s ease-in-out";
     const rekt = getRect(element);
-    // placeElement(element, rekt);
-    // element.style.left = `${rekt.}`;
-    console.log(rekt);
     const ul = element.parentElement as HTMLUListElement;
 
     // Store original height
     const originalHeight = ul.offsetHeight;
-    ul.style.height = `${originalHeight}px`;
-    ul.style.paddingTop = `0px`;
 
+    // Set initial position
     Object.assign(element.style, {
-      // position: "absolute",
-      flex: "0 0 100%",
-      top: "0px",
-      left: "0px",
-      width: rekt.width + "px",
-      height: rekt.height + "px",
-      transform: `translate(${diff?.left}px, ${diff?.top}px)`,
+      position: "absolute",
+      top: `0px`,
+      left: `0px`,
+      width: `${rekt.width}px`,
+      height: `${rekt.height}px`,
     });
 
+    // Force reflow
+    void element.offsetHeight;
+
+    // Animate to final position
     requestAnimationFrame(() => {
-      // Reset height after transition completes
-      ul.style.height = `${originalHeight}px`;
+      element.style.transform = `translate(${diff?.left}px, ${diff?.top}px)`;
+
+      // Clean up after animation
+      setTimeout(() => {
+        element.classList.remove("animating");
+        ul.style.height = `${originalHeight}px`;
+      }, 500); // Match transition duration
     });
-  } else {
-    console.warn(
-      `Could not animate ${targetId}: element or position not found`
-    );
   }
 }
 
@@ -149,28 +147,21 @@ const Header: React.FC = () => {
         const current = containerRef.current?.querySelector(`#${id}`);
         if (!current) return;
 
-        // Only check direction if we're within the offset threshold
-        // Check if we're within the scrollbar offset threshold
         if (Math.abs(position - latest) < SCROLLBAR_OFFSET) {
           const currentDir = position - latest > 0 ? "+" : "-";
           const lastDir = current.getAttribute("lastTriggerForDir");
           const hasExitedOffset =
             current.getAttribute("hasExitedOffset") === "true";
 
-          // Only proceed if direction has changed and we've exited the offset zone before
           if (
             current.getAttribute("lastTriggerForDir") !== currentDir &&
             (hasExitedOffset || !lastDir)
           ) {
-            console.log(
-              `Triggering section: ${id}, direction: ${currentDir}, position: ${position}, scrollY: ${latest}`
-            );
             current.setAttribute("lastTriggerForDir", currentDir);
             current.setAttribute("hasExitedOffset", "false");
             animateElement(containerRef.current?.querySelector("ul"), id);
           }
         } else {
-          // Mark that we've exited the offset zone
           current.setAttribute("hasExitedOffset", "true");
         }
       });
@@ -178,6 +169,7 @@ const Header: React.FC = () => {
 
     return () => unsubscribe();
   }, [scrollY, sectionPositions]);
+
   return (
     <div className="container">
       <Skeleton
@@ -203,7 +195,7 @@ const Header: React.FC = () => {
             flexDirection: startingDir.get(),
           },
         }}
-      ></Skeleton>
+      />
       <Skeleton
         header={{ style: { zIndex: -1 } }}
         headerContent={{
@@ -220,10 +212,11 @@ const Header: React.FC = () => {
           style: { flexDirection: startingDir.get() },
         }}
         items={{ style: { marginTop: 10 } }}
-      ></Skeleton>
+      />
     </div>
   );
 };
+
 type SkeletonStructure = {
   header: HTMLDivElement;
   headerContent: HTMLDivElement;
@@ -234,7 +227,6 @@ type SkeletonStructure = {
   };
 };
 
-// Utility type that maps a key to its props type
 type ElementProps<T extends keyof SkeletonStructure> = React.HTMLProps<
   SkeletonStructure[T]
 >;
@@ -243,7 +235,6 @@ type SkeletonProps = {
   [P in keyof SkeletonStructure]: ElementProps<P>;
 };
 
-// Generic component must take `props` of type SkeletonProps<K>
 const Skeleton = ({
   header,
   headerContent,
@@ -258,7 +249,12 @@ const Skeleton = ({
         <nav {...nav}>
           <ul {...navList}>
             {ITEMS.map((item) => (
-              <li className="item" {...items} id={item.id} key={item.id}>
+              <li
+                className="item"
+                id={item.id}
+                key={item.id}
+                {...(items as unknown as React.HTMLProps<HTMLLIElement>)}
+              >
                 <a href={`#${item.id}`}>{item.label}</a>
               </li>
             ))}
