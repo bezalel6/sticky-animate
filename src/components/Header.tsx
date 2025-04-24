@@ -74,7 +74,7 @@ function animateElement(container: FakeDomTarget, targetId: string) {
 }
 
 const Header: React.FC = () => {
-  const containerRef = useRef<HTMLUListElement>(null);
+  const containerRef = useRef<HTMLUListElement | HTMLDivElement>(null);
   const { scrollY } = useScroll();
   const [sectionPositions, setSectionPositions] = useState<{
     [key: string]: number;
@@ -125,7 +125,7 @@ const Header: React.FC = () => {
             );
             current.setAttribute("lastTriggerForDir", currentDir);
             current.setAttribute("hasExitedOffset", "false");
-            animateElement(containerRef, id);
+            animateElement(containerRef.current?.querySelector("ul"), id);
           }
         } else {
           // Mark that we've exited the offset zone
@@ -138,7 +138,12 @@ const Header: React.FC = () => {
   }, [scrollY, sectionPositions]);
   return (
     <>
-      <Skeleton></Skeleton>
+      <Skeleton
+        headerContent={{ style: { position: "absolute", top: 0, left: 0 } }}
+        header={{
+          ref: containerRef as Ref<HTMLDivElement> | undefined,
+        }}
+      ></Skeleton>
       <Skeleton
         header={{ style: { display: "block", visibility: "hidden" } }}
       ></Skeleton>
@@ -172,26 +177,14 @@ const Skeleton = ({
   navList,
   items,
 }: Partial<SkeletonProps>) => {
-  const mergedHeader = mergeProps({ className: "header" }, header || {});
-  const mergedHeaderContent = mergeProps(
-    { className: "header-content" },
-    headerContent || {}
-  );
-  const mergedNav = mergeProps(nav || {});
-  const mergedNavList = mergeProps(
-    { style: { position: "relative" } },
-    navList || {}
-  );
-  const mergedItems = mergeProps({ className: "item" }, items || {});
-
   return (
-    <header {...mergedHeader}>
-      <div {...mergedHeaderContent}>
+    <header className="header" {...header}>
+      <div className="header-content" {...headerContent}>
         <h1>Sticky Header</h1>
-        <nav {...mergedNav}>
-          <ul {...(mergedNavList as React.HTMLAttributes<HTMLUListElement>)}>
+        <nav {...nav}>
+          <ul style={{ position: "relative" }} {...navList}>
             {ITEMS.map((item) => (
-              <li {...mergedItems} id={item.id} key={item.id}>
+              <li className="item" {...items} id={item.id} key={item.id}>
                 <a href={`#${item.id}`}>{item.label}</a>
               </li>
             ))}

@@ -1,6 +1,10 @@
 import { RefObject } from "react";
 type Selector = string;
-export type FakeDomTarget = Selector | Element | RefObject<Element | null>;
+export type FakeDomTarget =
+  | Selector
+  | Element
+  | RefObject<Element | null>
+  | null;
 export function normalizeTarget(target: FakeDomTarget, prefix: string = "") {
   // Get the target element
   let targetElement: Element | null = null;
@@ -28,21 +32,19 @@ export function makeFakeDom<T>(
   if (!target) return null;
   // Clone the element and its children
   const clone = target.cloneNode(true) as HTMLElement;
-
   // Create a hidden container
   const container = document.createElement("div");
-  Object.assign(clone.style, {
+  Object.assign(container.style, {
     // position: "fixed",
     // left: "-9999px",
     // visibility: "hidden",
   });
 
   // Append elements to DOM
-  target.parentNode!.insertBefore(clone, target);
-
+  target.parentNode!.insertBefore(container, target);
+  container.appendChild(clone);
   // Apply temporary styles
   Object.assign(clone.style, styles);
-
   // Calculate the result
   const computedValue = callback(clone);
 
