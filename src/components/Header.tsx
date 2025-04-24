@@ -144,9 +144,11 @@ const Header: React.FC = () => {
         headerContent={{
           style: {
             position: "absolute",
-            top: 0,
-            left: "50%",
-            transform: "translate(-50%,0)",
+            top: "0",
+            right: "0",
+            bottom: "0",
+            left: "0",
+            margin: "auto",
           },
         }}
         header={{
@@ -157,7 +159,15 @@ const Header: React.FC = () => {
         }}
       ></Skeleton>
       <Skeleton
-        header={{ style: { display: "block", visibility: "hidden" } }}
+        header={{
+          style: {
+            display: "block",
+            zIndex: -1,
+          },
+        }}
+        navList={{
+          style: { flexDirection: startingDir === "row" ? "row" : "column" },
+        }}
       ></Skeleton>
     </div>
   );
