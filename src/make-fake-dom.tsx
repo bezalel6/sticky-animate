@@ -48,6 +48,6 @@ export function makeFakeDom<T>(
   const computedValue = callback(clone);
 
   // Cleanup DOM changes
-  container.remove();
+  // container.remove();
   return computedValue;
 }

@@ -1,5 +1,5 @@
 import { useScroll } from "framer-motion";
-import React, { Ref, useEffect, useRef, useState } from "react";
+import React, { Ref, RefObject, useEffect, useRef, useState } from "react";
 import {
   FakeDomTarget,
   makeFakeDom,
@@ -77,7 +77,7 @@ function animateElement(container: FakeDomTarget, targetId: string) {
 }
 
 const Header: React.FC = () => {
-  const containerRef = useRef<Element | HTMLUListElement>(null);
+  const containerRef = useRef<HTMLUListElement>(null);
   const { scrollY } = useScroll();
   const [sectionPositions, setSectionPositions] = useState<{
     [key: string]: number;
@@ -139,16 +139,22 @@ const Header: React.FC = () => {
 
     return () => unsubscribe();
   }, [scrollY, sectionPositions]);
-
   return (
-    <header className="header">
+    <Skeleton ref={containerRef} style={{ backgroundColor: "aqua" }}></Skeleton>
+  );
+};
+const Skeleton = ({
+  ref,
+  ...attrs
+}: {
+  ref: RefObject<HTMLUListElement | null>;
+} & React.HTMLProps<HTMLElement>) => {
+  return (
+    <header className="header" {...attrs}>
       <div className="header-content">
         <h1>Sticky Header</h1>
         <nav>
-          <ul
-            style={{ position: "relative" }}
-            ref={containerRef as Ref<HTMLUListElement>}
-          >
+          <ul style={{ position: "relative" }} ref={ref}>
             {sections.map((section) => (
               <li id={section.id} className="section" key={section.id}>
                 <a href={`#${section.id}`}>{section.label}</a>
@@ -160,5 +166,4 @@ const Header: React.FC = () => {
     </header>
   );
 };
-
 export default Header;
