@@ -1,0 +1,75 @@
+html {
+    box-sizing: border-box;
+  }
+  
+  *, *:before, *:after {
+    box-sizing: inherit;
+  }
+  
+  body {
+    font-size: 100%;
+  }
+  
+  ol {
+    display: flex;
+    transform-origin: 0 0;
+    transform: translate(calc(50% + 1.5em), -1.5em) rotate(90deg);
+    margin: 0;
+    padding: 1rem 2rem;
+    transition: transform 1s ease-in-out;
+    
+    li {
+      transform: rotate(-90deg);
+      transition: transform 1s ease-in-out;
+    }
+      
+    a {
+      display: block;
+      padding: 1rem;
+      text-decoration: none;
+      border-bottom: 1px solid blue;
+    }
+  }
+  
+  .transitioned {
+    flex-direction: column;
+    transform: none;
+    transition: none;
+  
+    li {
+      transform: none;
+      transition: none;
+    }
+  }
+  
+  @media (min-width: 400px) {
+    
+    ol {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      transform: none;
+      transition: none;
+      
+      li {
+        transform: none;
+        transition: none;
+      }
+       
+      a {
+        display: block;
+      }
+    }
+    
+    .transitioned {
+      transform-origin: 50% 1.5em;
+      transform: rotate(-90deg);
+      transition: transform 1s ease-in-out;
+      
+      li {
+        transform: rotate(90deg);
+        transition: transform 1s ease-in-out;
+      }
+    }
+    
+  }
