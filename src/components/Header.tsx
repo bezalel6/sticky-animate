@@ -86,24 +86,27 @@ function animateElement(container: FakeDomTarget, targetId: string) {
     const rekt = getRect(element);
     // placeElement(element, rekt);
     // element.style.left = `${rekt.}`;
+    console.log(rekt);
     const ul = element.parentElement as HTMLUListElement;
-    ul.style.paddingTop = `${rekt.top}px`;
-    element.style.top = `0px`;
-    element.style.left = `0px`;
-    // element.style.top = `${rekt.top}px`;
-    element.style.position = "absolute";
-    // Store original height
-    // element.parentElement!.style.height = element.offsetHeight + "";
-    // Apply the animation
-    // requestAnimationFrame(() => {
-    //   element.style.position = "absolute";
-    //   element.style.transform = `translate(${diff?.left}px, ${diff?.top}px)`;
 
-    //   // Reset height after transition completes
-    //   setTimeout(() => {
-    //     element.parentElement!.style.height = "";
-    //   }, 1300); // 1.3s to match the transition duration
-    // });
+    // Store original height
+    ul.style.paddingTop = `${rekt.top}px`;
+    Object.assign(element.style, {
+      ...element.style,
+      top: "0px",
+      left: "0px",
+      width: rekt.width + "px",
+      height: rekt.height + "px",
+      position: "absolute",
+    });
+    requestAnimationFrame(() => {
+      element.style.transform = `translate(${diff?.left}px, ${diff?.top}px)`;
+
+      // Reset height after transition completes
+      setTimeout(() => {
+        element.parentElement!.style.height = "";
+      }, 1300); // 1.3s to match the transition duration
+    });
   } else {
     console.warn(
       `Could not animate ${targetId}: element or position not found`
